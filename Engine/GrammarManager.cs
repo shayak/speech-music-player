@@ -28,7 +28,11 @@ namespace SpeechRecognition
         public Grammar GetSongGrammar()
         {
             Choices songs = new Choices();
-            songs.Add(songRepo.GetAllTitles());
+            var list = songRepo.GetAllTitles();
+
+            if (list.Count() == 0) return null;
+            
+            songs.Add(list);
             GrammarBuilder gb = new GrammarBuilder();
             gb.Append(songs);
             return new Grammar(gb);
@@ -37,7 +41,7 @@ namespace SpeechRecognition
         public Grammar GetMenuGrammar()
         {
             GrammarBuilder gb = new GrammarBuilder();
-            gb.Append(new Choices("Play a song", "Stop Playing"));            
+            gb.Append(new Choices("Play a song", "Stop", "Stop Listening", "Resume", "Pause"));            
             return new Grammar(gb);
         }       
     }

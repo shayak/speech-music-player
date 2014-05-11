@@ -13,11 +13,11 @@ namespace SpeechRecognition
     {
         private SpeechRecognitionEngine recognizer;
         private GrammarManager grammarManager;
-        private EventHandler<string> recognizedEvent;
+        private EventHandler<SpeechRecognizedUpdateArgs> recognizedEvent;
 
         public bool Listening { get; set; }
         
-        public SpeechEngine(EventHandler<string> recognizedEvent)
+        public SpeechEngine(EventHandler<SpeechRecognizedUpdateArgs> recognizedEvent)
         {
             this.recognizedEvent = recognizedEvent;
 
@@ -25,7 +25,9 @@ namespace SpeechRecognition
 
             recognizer = new SpeechRecognitionEngine();
             recognizer.LoadGrammar(grammarManager.GetMenuGrammar());
-            recognizer.LoadGrammar(grammarManager.GetSongGrammar());
+
+            loadGrammarFromDB();
+            
             recognizer.SetInputToDefaultAudioDevice();
 
             recognizer.SpeechRecognized += sr_SpeechRecognizedHandler;            
@@ -37,10 +39,11 @@ namespace SpeechRecognition
         }
 
         public void Start()
-        {            
+        {
+            loadGrammarFromDB();
             if (!Listening)
                 recognizer.RecognizeAsync(RecognizeMode.Multiple);
-            Listening = true;
+            Listening = true;            
         }
 
         public void Stop()
@@ -50,22 +53,27 @@ namespace SpeechRecognition
             Listening = false;
         }
 
+        private void loadGrammarFromDB()
+        {
+            var gram = grammarManager.GetSongGrammar();
+            if (gram != null)
+                recognizer.LoadGrammar(gram);
+        }
+
         private void sr_SpeechRecognizedHandler(object sender, SpeechRecognizedEventArgs e)
         {
-            Console.WriteLine(e.Result.Text + " | " + e.Result.Confidence); 
-            if (e.Result.Confidence < 0.85)
-                return; 
+            Console.WriteLine(e.Result.Text + " | " + e.Result.Confidence);
 
-            if (e.Result.Text.ToString() == "Stop Playing")
+            if (e.Result.Text.ToString() == "Stop Listening")
                 Stop();
 
-            recognizedEvent(this, e.Result.Text);           
+            recognizedEvent(this, new SpeechRecognizedUpdateArgs(e.Result.Text, e.Result.Confidence));
         }
 
 
         private void sr_RecognizeCompletedHandler(object sender, RecognizeCompletedEventArgs e)
         {
-            Console.WriteLine(e.Result.Text, e.Result.Confidence);
+            
         }
 
         private void sr_SpeechDetectedHandler(object sender, SpeechDetectedEventArgs e)
@@ -81,6 +89,18 @@ namespace SpeechRecognition
         private void sr_SpeechRecognitionRejectedHandler(object sender, SpeechRecognitionRejectedEventArgs e)
         {
 
+        }
+    }
+
+    public class SpeechRecognizedUpdateArgs : EventArgs
+    {
+        public string title;
+        public double confidence;
+
+        public SpeechRecognizedUpdateArgs(string title, double confidence)
+        {
+            this.title = title;
+            this.confidence = confidence;
         }
     }
 }

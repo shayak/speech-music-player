@@ -82,6 +82,8 @@ namespace SpeechRecognition.DataAccess
 
         public void AddSongsToDB(string path)
         {
+            if (String.IsNullOrWhiteSpace(path)) return;
+
             var songFiles = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Where(x => x.EndsWith(".mp3")/* || x.EndsWith(".wav")*/);
             foreach (var song in songFiles)
             {

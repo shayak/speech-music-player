@@ -12,8 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SpeechRecognition;
-using SpeechRecognition.DataAccess;
 using WinForms = System.Windows.Forms;
 
 namespace UI
@@ -23,38 +21,27 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private SongRepo songRepo;
-        private SpeechEngine speechEngine;
-        private SongPlayer player;
-
-        public event EventHandler<string> songRecognizedEvent;
+        public MainWindowViewModel mainWinVM;
         
         public MainWindow()
         {
             InitializeComponent();
-
-            songRecognizedEvent += OnSongRecognized;
-
-            songRepo = new SongRepo();
-            speechEngine = new SpeechEngine(songRecognizedEvent);
-            player = new SongPlayer();            
+            
+            mainWinVM = new MainWindowViewModel(this);
+            this.DataContext = mainWinVM;       
         }
 
         public void Add_Songs_Button_Click(Object sender, RoutedEventArgs e)
         {
             var dialog = new WinForms.FolderBrowserDialog();
             WinForms.DialogResult result = dialog.ShowDialog();
-            songRepo.AddSongsToDB(dialog.SelectedPath);
+            mainWinVM.AddSongsAsync(dialog.SelectedPath);
         }
 
         public void Start_Listening_Button_Click(Object sender, RoutedEventArgs e)
         {
-            speechEngine.Start();
-        }
-
-        public void OnSongRecognized(object sender, string title)
-        {
-            player.PlaySong(songRepo, title);
-        }
+            mainWinVM.ToggleListenMode();
+        }     
+        
     }
 }

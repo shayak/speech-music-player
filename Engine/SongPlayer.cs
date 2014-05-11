@@ -28,6 +28,21 @@ namespace SpeechRecognition
                 PlayWav(path);            
         }
 
+        public void Stop()
+        {
+            WPlayer.controls.stop();
+        }
+
+        public void Pause()
+        {
+            WPlayer.controls.pause();
+        }
+
+        public void Play()
+        {
+            WPlayer.controls.play();
+        }
+
         public void PlayMp3(string path)
         {            
             WPlayer.URL = path;
