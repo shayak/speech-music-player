@@ -18,3 +18,4 @@ d:\workspace\SpeechRecognition\Engine\obj\Release\Interop.WMPLib.dll
 d:\workspace\SpeechRecognition\Engine\obj\Release\Engine.csproj.ResolveComReference.cache
 d:\workspace\SpeechRecognition\Engine\obj\Release\Engine.dll
 d:\workspace\SpeechRecognition\Engine\obj\Release\Engine.pdb
+d:\workspace\SpeechRecognition\Engine\obj\Release\Engine.csprojResolveAssemblyReference.cache
